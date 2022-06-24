@@ -8,5 +8,6 @@ http:
 logger:
   log_level: 'debug'
 
-postgres:
-  pool_max: 2
+# todo нужен ли pgpool?
+#postgres:
+#  pool_max: 2

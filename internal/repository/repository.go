@@ -1,15 +1,24 @@
 package repository
 
-import "github.com/XXena/shorter/internal/entities"
+import (
+	"github.com/XXena/shorter/internal/entities"
+	"github.com/jackc/pgx"
+)
 
 type Repository struct {
 	Record
 }
 
 type Record interface {
-	Create(recordID int, record entities.Record) (shortURL string, err error)
-	//GetById(recordID int) (entities.Record, error)
-	GetByURL(longURL string) (shortURL string, err error)
+	Create(record entities.Record) (id int, err error)
+	GetByURL(longURL string) (record entities.Record, err error)
 	Update(recordID int, record entities.Record) error
 	Delete(recordID int) error
+}
+
+func NewRepository(db *pgx.Conn) *Repository {
+	//func NewRepository(db *sqlx.DB) *Repository {
+	return &Repository{
+		Record: NewRecordPostgres(db),
+	}
 }

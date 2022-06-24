@@ -1,4 +1,4 @@
-package shorter
+package httpserver
 
 import (
 	"context"

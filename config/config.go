@@ -3,6 +3,8 @@ package config
 import (
 	"fmt"
 
+	"github.com/joho/godotenv"
+
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
@@ -11,7 +13,7 @@ type (
 		App  `yaml:"app"`
 		HTTP `yaml:"http"`
 		Log  `yaml:"logger"`
-		PG   `yaml:"postgres"`
+		PG
 	}
 
 	App struct {
@@ -28,22 +30,29 @@ type (
 	}
 
 	PG struct {
-		PoolMax int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
-		URL     string `env-required:"true"                 env:"PG_URL"`
+		Host     string `env:"DB_HOST"`
+		Port     string `env:"DB_PORT"`
+		Username string `env:"DB_USER"`
+		Password string `env:"DB_PASSWORD"`
+		DBName   string `env:"DB_NAME"`
+		DBDriver string `env:"DB_DRIVER"`
+		SSLMode  string `env:"SSL_MODE"`
 	}
 )
 
 func NewConfig() (*Config, error) {
 	cfg := &Config{}
+
 	err := cleanenv.ReadConfig("./config/config.yml", cfg)
 	if err != nil {
 		return nil, fmt.Errorf("config error: %w", err)
 	}
 
+	err = godotenv.Load()
+
 	err = cleanenv.ReadEnv(cfg)
 	if err != nil {
 		return nil, err
 	}
-
 	return cfg, nil
 }
