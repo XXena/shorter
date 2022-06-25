@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"math/big"
 	"os"
+	"strings"
 	"time"
-
-	"github.com/XXena/shorter/config"
 
 	"github.com/itchyny/base58-go"
 
@@ -29,7 +28,7 @@ func (s *RecordService) Create(record entities.Record) (string, error) {
 	record.Token = GenerateShortLink(record.LongURL)
 	_, err := s.r.Create(record)
 
-	return config.ShortAddr + record.Token, err
+	return record.Token, err
 
 }
 func (s *RecordService) GetByURL(longURL string) (string, error) {
@@ -39,7 +38,17 @@ func (s *RecordService) GetByURL(longURL string) (string, error) {
 		//todo если срок действия истек, генеринруется новый хэш и возвращается наружу
 	}
 
-	return config.ShortAddr + record.Token, err
+	return record.Token, err
+}
+
+func (s *RecordService) Redirect(shortURL string) (string, error) {
+	token := getToken(shortURL)
+	record, err := s.r.GetByToken(token)
+	if !(helpers.InTime(record.ExpiryDate, time.Now())) {
+		//todo если срок действия истек, вернуть ошибку о сроке действия
+	}
+
+	return record.LongURL, err
 }
 
 func (s *RecordService) Update(recordID int, record entities.Record) error {
@@ -71,4 +80,8 @@ func sha256gen(input string) []byte {
 	hash := sha256.New()
 	hash.Write([]byte(input))
 	return hash.Sum(nil)
+}
+
+func getToken(shortURL string) string {
+	return strings.TrimLeft(shortURL, "localhost/")
 }

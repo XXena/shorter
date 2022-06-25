@@ -44,6 +44,23 @@ func (r RecordPostgres) GetByURL(longURL string) (record entities.Record, err er
 	return record, err
 }
 
+func (r RecordPostgres) GetByToken(token string) (record entities.Record, err error) {
+	query := fmt.Sprintf(`SELECT r.id, r.long_url, r.token, r.created_at, r.expiry_date FROM %s r
+								 WHERE r.token = $1`, recordsTable)
+	err = r.db.QueryRow(query, token).Scan(
+		&record.ID,
+		&record.LongURL,
+		&record.Token,
+		&record.CreatedAt,
+		&record.ExpiryDate)
+
+	if err != nil {
+		fmt.Printf("QueryRow GetByToken failed: %v\n", err)
+	}
+
+	return record, err
+}
+
 func (r RecordPostgres) Update(recordID int, record entities.Record) error {
 	//TODO implement me
 	panic("implement me")

@@ -13,8 +13,6 @@ import (
 )
 
 func (h *Handler) Fetch(w http.ResponseWriter, r *http.Request) {
-	//url := r.URL.RequestURI()
-
 	err := r.ParseForm()
 	if err != nil {
 		log.Printf("Parse form parameter failed: %s", err)
