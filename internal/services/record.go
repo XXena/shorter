@@ -7,6 +7,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/XXena/shorter/config"
+
 	"github.com/itchyny/base58-go"
 
 	"github.com/XXena/shorter/internal/entities"
@@ -22,23 +24,22 @@ func NewRecordService(r repository.Record) *RecordService {
 	return &RecordService{r: r}
 }
 
-func (s *RecordService) Create(record entities.Record) (shortURL string, err error) {
+func (s *RecordService) Create(record entities.Record) (string, error) {
 
-	shortURL = GenerateShortLink(record.LongURL)
-	record.Token = shortURL
-	_, err = s.r.Create(record)
+	record.Token = GenerateShortLink(record.LongURL)
+	_, err := s.r.Create(record)
 
-	return shortURL, err
+	return config.ShortAddr + record.Token, err
 
 }
-func (s *RecordService) GetByURL(longURL string) (shortURL string, err error) {
+func (s *RecordService) GetByURL(longURL string) (string, error) {
 	record, err := s.r.GetByURL(longURL)
 
 	if !(helpers.InTime(record.ExpiryDate, time.Now())) {
 		//todo если срок действия истек, генеринруется новый хэш и возвращается наружу
 	}
 
-	return record.Token, err
+	return config.ShortAddr + record.Token, err
 }
 
 func (s *RecordService) Update(recordID int, record entities.Record) error {

@@ -16,6 +16,6 @@ func NewHandler(service *services.Service) *Handler {
 
 func (h *Handler) InitRoutes() *http.ServeMux {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", h.Fetch)
+	mux.HandleFunc("/send", h.Fetch)
 	return mux
 }

@@ -8,6 +8,11 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
+const (
+	FormParameter = "url"
+	ShortAddr     = "http://sh.com/"
+)
+
 type (
 	Config struct {
 		App  `yaml:"app"`
@@ -23,6 +28,7 @@ type (
 
 	HTTP struct {
 		Port string `env-required:"true" yaml:"port" env:"HTTP_PORT"`
+		//ShortAddr string `env-required:"true" yaml:"short_addr" env:"SHORT_ADDR"` //todo
 	}
 
 	Log struct {

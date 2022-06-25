@@ -4,6 +4,7 @@ app:
 
 http:
   port: '8080'
+  #short_addr: 'http://sh.com/' # todo
 
 logger:
   log_level: 'debug'
