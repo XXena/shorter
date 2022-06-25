@@ -9,7 +9,6 @@ import (
 
 type RecordPostgres struct {
 	db *pgx.Conn
-	//db *sqlx.DB
 }
 
 func (r RecordPostgres) Create(record entities.Record) (recordID int, err error) {
@@ -38,7 +37,6 @@ func (r RecordPostgres) GetByURL(longURL string) (record entities.Record, err er
 		&record.CreatedAt,
 		&record.ExpiryDate)
 
-	// todo struct scan https://www.randylough.com/projects/pgxscan  ?
 	if err != nil {
 		fmt.Printf("QueryRow GetByURL failed: %v\n", err)
 	}
@@ -57,6 +55,5 @@ func (r RecordPostgres) Delete(recordID int) error {
 }
 
 func NewRecordPostgres(db *pgx.Conn) *RecordPostgres {
-	//func NewRecordPostgres(db *sqlx.DB) *RecordPostgres {
 	return &RecordPostgres{db: db}
 }

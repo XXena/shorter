@@ -21,7 +21,7 @@ func (h *Handler) Fetch(w http.ResponseWriter, r *http.Request) {
 			Record := entities.Record{
 				LongURL:   url,
 				CreatedAt: now,
-				// год после создания:
+				// срок действия - год после создания:
 				ExpiryDate: now.AddDate(1, 0, 0), // todo кастомный срок действия
 			}
 			body, err := h.service.Record.Create(Record)

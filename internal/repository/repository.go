@@ -17,7 +17,6 @@ type Record interface {
 }
 
 func NewRepository(db *pgx.Conn) *Repository {
-	//func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		Record: NewRecordPostgres(db),
 	}

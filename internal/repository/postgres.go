@@ -16,21 +16,6 @@ const (
 )
 
 func NewPostgresDB(cfg config.PG) (*pgx.Conn, error) {
-	//func NewPostgresDB(cfg config.PG) (*sqlx.DB, error) {
-	//db, err := sqlx.Open(cfg.DBDriver, fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-	//	cfg.Host, cfg.Port, cfg.Username, cfg.DBName, cfg.Password, cfg.SSLMode))
-
-	//db, err := sqlx.Open(cfg.DBDriver, fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-	//	cfg.Host, cfg.Port, cfg.Username, cfg.DBName, cfg.Password, cfg.SSLMode))
-	//db, err := sqlx.Open(`postgres`, fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-	//	cfg.Host, cfg.Port, cfg.Username, cfg.DBName, cfg.Password, cfg.SSLMode))
-
-	//db, err := sqlx.Connect("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-	//	cfg.Host, cfg.Port, cfg.Username, cfg.DBName, cfg.Password, cfg.SSLMode))
-	//if err != nil {
-	//	log.Fatalln(err)
-	//}
-
 	port, err := strconv.ParseUint(cfg.Port, 10, 16)
 	if err != nil {
 		log.Fatal(err)
@@ -50,12 +35,5 @@ func NewPostgresDB(cfg config.PG) (*pgx.Conn, error) {
 		return nil, err
 	}
 
-	//err = db.Ping()
-	//
-	//if err != nil {
-	//	return nil, err
-	//}
-
-	//return db, nil
 	return conn, nil
 }
