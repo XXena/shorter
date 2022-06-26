@@ -1,8 +1,10 @@
 package repository
 
 import (
-	"log"
+	"fmt"
 	"strconv"
+
+	"github.com/XXena/shorter/pkg/logger"
 
 	"github.com/jackc/pgx"
 
@@ -15,10 +17,10 @@ const (
 	recordsTable = "records"
 )
 
-func NewPostgresDB(cfg config.PG) (*pgx.Conn, error) {
+func NewPostgresDB(cfg config.PG, l logger.Interface) (*pgx.Conn, error) {
 	port, err := strconv.ParseUint(cfg.Port, 10, 16)
 	if err != nil {
-		log.Fatal(err)
+		l.Fatal(fmt.Errorf("unable to parse database port: %w", err))
 	}
 
 	conn, err := pgx.Connect(pgx.ConnConfig{
@@ -27,7 +29,7 @@ func NewPostgresDB(cfg config.PG) (*pgx.Conn, error) {
 		Database: cfg.DBName,
 		User:     cfg.Username,
 		Password: cfg.Password,
-		//Logger:               nil, // todo подключить логгер
+		//Logger:               nil, // todo подключить логгер db?
 		//LogLevel:             0,
 	})
 

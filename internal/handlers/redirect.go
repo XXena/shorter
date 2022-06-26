@@ -17,11 +17,11 @@ func (h *Handler) Redirect(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		h.logger.Error("redirect failed", err)
+		h.logger.Error(fmt.Errorf("redirect failed: %w", err))
 		w.WriteHeader(http.StatusInternalServerError)
 		_, err := w.Write([]byte(fmt.Sprintf("internal error: %s", err.Error())))
 		if err != nil {
-			h.logger.Error("internal error", err)
+			h.logger.Error(fmt.Errorf("internal error: %w", err))
 			return
 		}
 		return

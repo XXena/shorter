@@ -23,16 +23,15 @@ import (
 func Run(cfg *config.Config) {
 	l := logger.New(cfg.Log.Level)
 
-	db, err := repository.NewPostgresDB(cfg.PG)
+	db, err := repository.NewPostgresDB(cfg.PG, l)
 	if err != nil {
-		l.Fatal("error occurred while running app", err)
-		//log.Fatalf("error occurred while running app: %s", err.Error())
+		l.Fatal(fmt.Errorf("error occurred while running app: %w", err))
 	}
 
-	Repository := repository.NewRepository(db)
+	Repository := repository.NewRepository(db, l)
 	// todo defer pg.Close()
 
-	Service := services.NewService(Repository)
+	Service := services.NewService(Repository, l)
 
 	Handler := handlers.NewHandler(Service, l)
 
@@ -40,8 +39,7 @@ func Run(cfg *config.Config) {
 	go func() {
 		fmt.Printf("Listening to port %s \n", cfg.HTTP.Port)
 		if err := srv.Run(cfg.HTTP.Port, Handler.InitRoutes()); err != nil {
-			l.Fatal("error ocurred while running http server", err)
-			//log.Fatalf("error ocurred while running http server: %s", err.Error())
+			l.Fatal(fmt.Errorf("error occurred while running http server: %w", err))
 		}
 	}()
 
@@ -51,7 +49,7 @@ func Run(cfg *config.Config) {
 
 	select {
 	case s := <-interrupt:
-		l.Info("app - Run - signal: " + s.String())
+		l.Info(fmt.Sprintf("app - Run - signal: %s", s))
 		// todo добавить notify (для ловли ошибок без падения?)
 		//  case err = <-httpServer.Notify():
 		//	l.Error(fmt.Errorf("app - Run - httpServer.Notify: %w", err))

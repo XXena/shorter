@@ -3,10 +3,12 @@ package services
 import (
 	"github.com/XXena/shorter/internal/entities"
 	"github.com/XXena/shorter/internal/repository"
+	"github.com/XXena/shorter/pkg/logger"
 )
 
 type Service struct {
 	Record
+	logger logger.Interface
 }
 type Record interface {
 	Create(entities.Record) (string, error)
@@ -16,8 +18,8 @@ type Record interface {
 	Delete(recordID int) error
 }
 
-func NewService(r *repository.Repository) *Service {
+func NewService(r *repository.Repository, l logger.Interface) *Service {
 	return &Service{
-		Record: NewRecordService(r.Record),
+		Record: NewRecordService(r.Record, l),
 	}
 }

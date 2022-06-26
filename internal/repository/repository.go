@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/XXena/shorter/internal/entities"
+	"github.com/XXena/shorter/pkg/logger"
 	"github.com/jackc/pgx"
 )
 
@@ -17,8 +18,8 @@ type Record interface {
 	Delete(recordID int) error
 }
 
-func NewRepository(db *pgx.Conn) *Repository {
+func NewRepository(db *pgx.Conn, l logger.Interface) *Repository {
 	return &Repository{
-		Record: NewRecordPostgres(db),
+		Record: NewRecordPostgres(db, l),
 	}
 }

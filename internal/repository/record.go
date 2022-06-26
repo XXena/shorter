@@ -3,12 +3,15 @@ package repository
 import (
 	"fmt"
 
+	"github.com/XXena/shorter/pkg/logger"
+
 	"github.com/XXena/shorter/internal/entities"
 	"github.com/jackc/pgx"
 )
 
 type RecordPostgres struct {
-	db *pgx.Conn
+	db     *pgx.Conn
+	logger logger.Interface
 }
 
 func (r RecordPostgres) Create(record entities.Record) (recordID int, err error) {
@@ -19,9 +22,9 @@ func (r RecordPostgres) Create(record entities.Record) (recordID int, err error)
 	//todo обработка дат
 	err = r.db.QueryRow(query, record.LongURL, record.Token, record.CreatedAt, record.ExpiryDate).Scan(&recordID)
 	if err != nil {
-		fmt.Printf("QueryRow Create failed: %v\n", err)
+		r.logger.Error(fmt.Errorf("db query Create failed: %w", err))
 	}
-	fmt.Println("New record ID is:", recordID)
+	r.logger.Info(fmt.Sprintf("New record ID is: %d", recordID))
 
 	return recordID, err
 }
@@ -38,7 +41,7 @@ func (r RecordPostgres) GetByURL(longURL string) (record entities.Record, err er
 		&record.ExpiryDate)
 
 	if err != nil {
-		fmt.Printf("QueryRow GetByURL failed: %v\n", err)
+		r.logger.Error(fmt.Errorf("db query GetByURL failed: %w", err))
 	}
 
 	return record, err
@@ -55,7 +58,7 @@ func (r RecordPostgres) GetByToken(token string) (record entities.Record, err er
 		&record.ExpiryDate)
 
 	if err != nil {
-		fmt.Printf("QueryRow GetByToken failed: %v\n", err)
+		r.logger.Error(fmt.Errorf("db query GetByToken failed: %w", err))
 	}
 
 	return record, err
@@ -71,6 +74,9 @@ func (r RecordPostgres) Delete(recordID int) error {
 	panic("implement me")
 }
 
-func NewRecordPostgres(db *pgx.Conn) *RecordPostgres {
-	return &RecordPostgres{db: db}
+func NewRecordPostgres(db *pgx.Conn, l logger.Interface) *RecordPostgres {
+	return &RecordPostgres{
+		db:     db,
+		logger: l,
+	}
 }
