@@ -9,6 +9,10 @@ import (
 	"github.com/jackc/pgx"
 )
 
+const (
+	recordsTable = "records" // todo где это хранить?
+)
+
 type RecordPostgres struct {
 	db     *pgx.Conn
 	logger logger.Interface
@@ -19,7 +23,6 @@ func (r RecordPostgres) Create(record entities.Record) (recordID int, err error)
 				VALUES ($1, $2, $3, $4)
 				RETURNING id`
 
-	//todo обработка дат
 	err = r.db.QueryRow(query, record.LongURL, record.Token, record.CreatedAt, record.ExpiryDate).Scan(&recordID)
 	if err != nil {
 		r.logger.Error(fmt.Errorf("db query Create failed: %w", err))

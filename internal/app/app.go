@@ -6,6 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/XXena/shorter/pkg/postgres"
+
 	"github.com/XXena/shorter/pkg/httpserver"
 
 	"github.com/XXena/shorter/internal/repository"
@@ -23,7 +25,7 @@ import (
 func Run(cfg *config.Config) {
 	l := logger.New(cfg.Log.Level)
 
-	db, err := repository.NewPostgresDB(cfg.PG, l)
+	db, err := postgres.NewPostgresDB(cfg.PG, l)
 	if err != nil {
 		l.Fatal(fmt.Errorf("error occurred while running app: %w", err))
 	}

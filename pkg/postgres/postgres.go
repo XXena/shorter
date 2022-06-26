@@ -1,4 +1,4 @@
-package repository
+package postgres
 
 import (
 	"fmt"
@@ -11,10 +11,6 @@ import (
 	"github.com/XXena/shorter/config"
 
 	_ "github.com/jackc/pgx"
-)
-
-const (
-	recordsTable = "records"
 )
 
 func NewPostgresDB(cfg config.PG, l logger.Interface) (*pgx.Conn, error) {
