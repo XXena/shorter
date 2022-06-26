@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -15,9 +14,10 @@ import (
 func (h *Handler) Fetch(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
-		log.Printf("Parse form parameter failed: %s", err)
+		h.logger.Warn("form parameter parsing failed", err)
 		return
 	}
+
 	url := r.Form.Get(config.FormParameter)
 	body, err := h.service.Record.GetByURL(url)
 	if err != nil {
@@ -29,17 +29,17 @@ func (h *Handler) Fetch(w http.ResponseWriter, r *http.Request) {
 				LongURL:   url,
 				CreatedAt: now,
 				// срок действия - год после создания:
-				ExpiryDate: now.AddDate(1, 0, 0), // todo кастомный срок действия
+				ExpiryDate: now.AddDate(1, 0, 0), // todo нужен настраиваемый срок действия
 			}
 			body, err := h.service.Record.Create(Record)
 			w.WriteHeader(http.StatusCreated)
 			_, err = w.Write([]byte(body))
 			if err != nil {
-				log.Printf("Create new record failed: %s", err)
+				h.logger.Error("Create new record failed", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				_, err := w.Write([]byte(fmt.Sprintf("internal error: %s", err.Error())))
 				if err != nil {
-					log.Println(err)
+					h.logger.Error("internal error", err)
 					return
 				}
 				return
@@ -48,11 +48,11 @@ func (h *Handler) Fetch(w http.ResponseWriter, r *http.Request) {
 		}
 		_, err = w.Write([]byte(body))
 		if err != nil {
-			log.Printf("GetByURL failed: %s", err)
+			h.logger.Error("GetByURL failed", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			_, err := w.Write([]byte(fmt.Sprintf("internal error: %s", err.Error())))
 			if err != nil {
-				log.Println(err)
+				h.logger.Error("internal error", err)
 				return
 			}
 			return
@@ -61,11 +61,11 @@ func (h *Handler) Fetch(w http.ResponseWriter, r *http.Request) {
 
 	_, err = w.Write([]byte(body))
 	if err != nil {
-		log.Printf("GetByURL failed: %s", err)
+		h.logger.Error("GetByURL failed", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		_, err := w.Write([]byte(fmt.Sprintf("internal error: %s", err.Error())))
 		if err != nil {
-			log.Println(err)
+			h.logger.Error("internal error", err)
 			return
 		}
 		return

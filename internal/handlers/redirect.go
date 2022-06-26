@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -18,17 +17,17 @@ func (h *Handler) Redirect(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		log.Printf("Redirect failed: %s", err)
+		h.logger.Error("redirect failed", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		_, err := w.Write([]byte(fmt.Sprintf("internal error: %s", err.Error())))
 		if err != nil {
-			log.Println(err)
+			h.logger.Error("internal error", err)
 			return
 		}
 		return
 	}
 
-	http.Redirect(w, r, longURL, 302) // todo status code
+	http.Redirect(w, r, longURL, http.StatusFound)
 	return
 
 }

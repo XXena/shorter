@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -26,7 +25,8 @@ func Run(cfg *config.Config) {
 
 	db, err := repository.NewPostgresDB(cfg.PG)
 	if err != nil {
-		log.Fatalf("error ocurred while running app: %s", err.Error())
+		l.Fatal("error occurred while running app", err)
+		//log.Fatalf("error occurred while running app: %s", err.Error())
 	}
 
 	Repository := repository.NewRepository(db)
@@ -34,13 +34,14 @@ func Run(cfg *config.Config) {
 
 	Service := services.NewService(Repository)
 
-	Handler := handlers.NewHandler(Service)
+	Handler := handlers.NewHandler(Service, l)
 
 	srv := new(httpserver.Server)
 	go func() {
 		fmt.Printf("Listening to port %s \n", cfg.HTTP.Port)
 		if err := srv.Run(cfg.HTTP.Port, Handler.InitRoutes()); err != nil {
-			log.Fatalf("error ocurred while running http server: %s", err.Error())
+			l.Fatal("error ocurred while running http server", err)
+			//log.Fatalf("error ocurred while running http server: %s", err.Error())
 		}
 	}()
 
