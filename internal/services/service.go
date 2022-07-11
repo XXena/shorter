@@ -7,10 +7,10 @@ import (
 )
 
 type Service struct {
-	Record
+	RecordRepo
 	logger logger.Interface
 }
-type Record interface {
+type RecordRepo interface {
 	Create(entities.Record) (string, error)
 	GetByURL(string) (string, error)
 	Redirect(string) (string, error)
@@ -20,6 +20,6 @@ type Record interface {
 
 func NewService(r *repository.Repository, l logger.Interface) *Service {
 	return &Service{
-		Record: NewRecordService(r.Record, l),
+		RecordRepo: NewRecordService(r.Record, l),
 	}
 }

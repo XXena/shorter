@@ -17,13 +17,13 @@ import (
 )
 
 type RecordService struct {
-	r      repository.Record
+	Repo   repository.Record
 	logger logger.Interface
 }
 
 func NewRecordService(r repository.Record, l logger.Interface) *RecordService {
 	return &RecordService{
-		r:      r,
+		Repo:   r,
 		logger: l,
 	}
 }
@@ -31,13 +31,13 @@ func NewRecordService(r repository.Record, l logger.Interface) *RecordService {
 func (s *RecordService) Create(record entities.Record) (string, error) {
 
 	record.Token = GenerateShortLink(record.LongURL, s.logger)
-	_, err := s.r.Create(record)
+	_, err := s.Repo.Create(record)
 
 	return record.Token, err
 
 }
 func (s *RecordService) GetByURL(longURL string) (string, error) {
-	record, err := s.r.GetByURL(longURL)
+	record, err := s.Repo.GetByURL(longURL)
 
 	if !(helpers.InTime(record.ExpiryDate, time.Now())) {
 		//todo если срок действия истек, генерируется новый хэш и возвращается наружу
@@ -48,7 +48,7 @@ func (s *RecordService) GetByURL(longURL string) (string, error) {
 
 func (s *RecordService) Redirect(shortURL string) (string, error) {
 	token := getToken(shortURL)
-	record, err := s.r.GetByToken(token)
+	record, err := s.Repo.GetByToken(token)
 	if !(helpers.InTime(record.ExpiryDate, time.Now())) {
 		//todo если срок действия истек, вернуть ошибку о сроке действия
 	}
@@ -57,11 +57,11 @@ func (s *RecordService) Redirect(shortURL string) (string, error) {
 }
 
 func (s *RecordService) Update(recordID int, record entities.Record) error {
-	return s.r.Update(recordID, record)
+	return s.Repo.Update(recordID, record)
 }
 
 func (s *RecordService) Delete(recordID int) error {
-	return s.r.Delete(recordID)
+	return s.Repo.Delete(recordID)
 }
 
 func GenerateShortLink(longURL string, l logger.Interface) (shortURL string) {
