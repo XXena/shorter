@@ -13,6 +13,7 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/lib/pq v1.10.2 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/rs/zerolog v1.27.0
 	github.com/shopspring/decimal v1.2.0 // indirect
