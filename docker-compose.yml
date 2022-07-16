@@ -1,54 +1,58 @@
 version: '1'
+
 services:
   app:
-    container_name: shorter
+    container_name: golang_container
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - DATABASE_HOST=${DB_HOST}
+      - DATABASE_PORT=${DB_PORT}
+#      - TEST_POSTGRES_USER=${TEST_DB_USER}
+#      - TEST_POSTGRES_PASSWORD=${TEST_DB_PASSWORD}
+#      - TEST_POSTGRES_DB=${TEST_DB_NAME}
+#      - TEST_DATABASE_HOST=${TEST_DB_HOST}
+#      - TEST_DATABASE_PORT=${TEST_DB_PORT}
+    tty: true
     build: .
     ports:
-      - 8080:8080
+      - 8000:8080
     restart: on-failure
     volumes:
-#      - .:/home/xenia/projects/m/shorter
-      - .:/usr/src/app/
+      - .:/app
     depends_on:
-      - fullstack-postgres
+      - postgresdb
     networks:
-      - fullstack
-
-
-  fullstack-postgres:
+      - ntw
+  postgresdb:
     image: postgres:latest
-    container_name: full_db_postgres
+    container_name: postgres_container
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
       - DATABASE_HOST=${DB_HOST}
     ports:
-      - '5432:5432'
+      - '1234:5436'
     volumes:
-      - database_postgres:/var/lib/postgresql/data
+#      - ./pg_data:/var/lib/postgresql/data
+      - .:/var/lib/postgresql/data
     networks:
-      - fullstack
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin_container
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-    depends_on:
-      - fullstack-postgres
-    ports:
-      - "5050:80"
+      - ntw
+  migrate:
+    image: migrate/migrate
     networks:
-      - fullstack
-    restart: unless-stopped
-
+      - ntw
+    volumes:
+      - .:/internal/db
+    command: ["-path", "/internal/db", "-database", "postgres://postgres:password@postgresdb:5436/postgres?sslmode=disable", "up"]
+    links:
+      - postgresdb
 volumes:
-  api:
-  database_postgres:
-
+  pg_data:
 # Networks to be created to facilitate communication between containers
+
 networks:
-  fullstack:
+  ntw:
     driver: bridge
