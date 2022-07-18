@@ -1,5 +1,5 @@
 # Start from golang base image
-FROM golang:alpine
+FROM golang:1.16-alpine
 
 # Install git.
 # Git is required for fetching the dependencies.

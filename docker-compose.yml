@@ -37,7 +37,7 @@ services:
       - '1234:5436'
     volumes:
 #      - ./pg_data:/var/lib/postgresql/data
-      - .:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
     networks:
       - ntw
   migrate:
@@ -45,13 +45,13 @@ services:
     networks:
       - ntw
     volumes:
-      - .:/internal/db
+#      - .:/internal/db
+      - ./internal/db:/internal/db
     command: ["-path", "/internal/db", "-database", "postgres://postgres:password@postgresdb:5436/postgres?sslmode=disable", "up"]
     links:
       - postgresdb
 volumes:
   pg_data:
-# Networks to be created to facilitate communication between containers
 
 networks:
   ntw:
