@@ -52,9 +52,8 @@ func Run(cfg *config.Config) {
 	select {
 	case s := <-interrupt:
 		l.Info(fmt.Sprintf("app - Run - signal: %s", s))
-		// todo добавить notify (для ловли ошибок без падения?)
-		//  case err = <-httpServer.Notify():
-		//	l.Error(fmt.Errorf("app - Run - httpServer.Notify: %w", err))
+	case err = <-srv.Notify():
+		l.Error(fmt.Errorf("app - Run - httpServer.Notify: %w", err))
 	}
 
 }
