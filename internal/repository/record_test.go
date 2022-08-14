@@ -4,6 +4,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/pkg/errors"
+
 	"github.com/stretchr/testify/assert"
 
 	"github.com/XXena/shorter/internal/entities"
@@ -29,12 +31,30 @@ func TestRecordPostgres_Create(t *testing.T) {
 	mockRecordRepo.EXPECT().Create(inputData).Return(inputData.ID, nil)
 
 	id, err := mockRecordRepo.Create(inputData)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if assert.Nil(t, err) {
 		assert.Equal(t, id, inputData.ID)
-	} else {
-		t.Errorf("repo Create err: %v", err) // todo вынести в отдельный тест, где провоцировать и всегда получать ошибку! юнит должен быть атомарным, никаких else
 	}
+
+}
+
+func TestRecordPostgres_CreateFail(t *testing.T) { // todo negative tests
+	ctl := gomock.NewController(t)
+	defer ctl.Finish()
+
+	inputData := entities.Record{}
+	mockRecordRepo := mock.NewMockRecord(ctl)
+	mockRecordRepo.EXPECT().Create(inputData).Return(inputData.ID, nil)
+
+	_, err := mockRecordRepo.Create(inputData)
+	mockRecordRepo.EXPECT().Create(inputData).Return(0, errors.New("unique constraint violation"))
+
+	_, err = mockRecordRepo.Create(inputData)
+
+	assert.NotNil(t, err)
 
 }
 
@@ -55,10 +75,12 @@ func TestRecordPostgres_GetByToken(t *testing.T) {
 
 	mockRecordRepo.EXPECT().GetByToken(inputData.Token).Return(inputData, nil)
 	record, err := mockRecordRepo.GetByToken(inputData.Token)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if assert.Nil(t, err) {
 		assert.Equal(t, inputData, record)
-	} else {
-		t.Errorf("record GetByToken err: %v", err)
 	}
 }
 
@@ -79,10 +101,12 @@ func TestRecordPostgres_GetByURL(t *testing.T) {
 
 	mockRecordRepo.EXPECT().GetByURL(inputData.LongURL).Return(inputData, nil)
 	record, err := mockRecordRepo.GetByURL(inputData.LongURL)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if assert.Nil(t, err) {
 		assert.Equal(t, inputData, record)
-	} else {
-		t.Errorf("record GetByURL err: %v", err)
 	}
 }
 
