@@ -6,6 +6,7 @@ package mock
 
 import (
 	reflect "reflect"
+	time "time"
 
 	entities "github.com/XXena/shorter/internal/entities"
 	gomock "github.com/golang/mock/gomock"
@@ -61,6 +62,21 @@ func (m *MockRecordRepo) Delete(recordID int) error {
 func (mr *MockRecordRepoMockRecorder) Delete(recordID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockRecordRepo)(nil).Delete), recordID)
+}
+
+// ForwardToCreate mocks base method.
+func (m *MockRecordRepo) ForwardToCreate(url string, expiry time.Time) ([]byte, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ForwardToCreate", url, expiry)
+	ret0, _ := ret[0].([]byte)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ForwardToCreate indicates an expected call of ForwardToCreate.
+func (mr *MockRecordRepoMockRecorder) ForwardToCreate(url, expiry interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ForwardToCreate", reflect.TypeOf((*MockRecordRepo)(nil).ForwardToCreate), url, expiry)
 }
 
 // GetByURL mocks base method.

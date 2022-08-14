@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	FormParameter = "url"
-	ShortAddr     = "http://sh.com/"
+	UrlFormParameter    = "url"
+	ExpiryFormParameter = "expiry"
+	ShortAddr           = "http://sh.com/"
 )
 
 type (

@@ -36,6 +36,28 @@ func (s *RecordService) Create(record entities.Record) (string, error) {
 	return record.Token, err
 
 }
+
+func (s *RecordService) ForwardToCreate(url string, expiry time.Time) ([]byte, error) {
+	now := time.Now()
+
+	if expiry.IsZero() {
+		expiry = now.AddDate(1, 0, 0) // todo нужен настраиваемый срок действия
+	}
+
+	token, err := s.Create(entities.Record{
+		LongURL:    url,
+		CreatedAt:  now,
+		ExpiryDate: expiry,
+	})
+
+	if err != nil {
+		return []byte(token), err
+	}
+
+	return []byte(token), nil
+
+}
+
 func (s *RecordService) GetByURL(longURL string) (string, error) {
 	record, err := s.Repo.GetByURL(longURL)
 

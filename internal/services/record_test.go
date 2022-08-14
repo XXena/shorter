@@ -37,6 +37,29 @@ func TestRecordService_Create(t *testing.T) {
 
 }
 
+func TestRecordService_ForwardToCreate(t *testing.T) {
+	ctl := gomock.NewController(t)
+	defer ctl.Finish()
+
+	now := time.Now()
+	inputData := entities.Record{
+		ID:         9,
+		LongURL:    "https://engineering.atspotify.com/2020/04/when-should-i-write-an-architecture-decision-record/",
+		Token:      "XAJjKHF4",
+		CreatedAt:  now,                  // 0001-01-01T00:00:01Z
+		ExpiryDate: now.AddDate(1, 0, 0), // 26132-08-16T01:41:32Z
+	}
+
+	mockRecordService := mock.NewMockRecordRepo(ctl)
+	mockRecordService.EXPECT().ForwardToCreate(inputData.LongURL, inputData.ExpiryDate).Return([]byte(inputData.Token), nil)
+
+	tokenBytes, err := mockRecordService.ForwardToCreate(inputData.LongURL, inputData.ExpiryDate)
+
+	if assert.Nil(t, err) {
+		assert.Equal(t, tokenBytes, []byte(inputData.Token))
+	}
+}
+
 func TestRecordService_GetByURL(t *testing.T) {
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
