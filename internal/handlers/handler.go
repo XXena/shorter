@@ -26,21 +26,3 @@ func (h *Handler) InitRoutes() *http.ServeMux {
 	mux.HandleFunc("/send", h.Fetch)
 	return mux
 }
-
-//type Service struct {
-//	RecordRepo
-//	logger logger.Interface
-//}
-//type RecordRepo interface {
-//	Create(entities.Record) (string, error)
-//	GetByURL(string) (string, error)
-//	Redirect(string) (string, error)
-//	Update(recordID int, record entities.Record) error
-//	Delete(recordID int) error
-//}
-//
-//func NewService(r *repository.Repository, l logger.Interface) *Service {
-//	return &Service{
-//		RecordRepo: NewRecordService(r.Record, l),
-//	}
-//}

@@ -30,8 +30,14 @@ func NewRecordService(r repository.Record, l logger.Interface) *RecordService {
 
 func (s *RecordService) Create(record entities.Record) (string, error) {
 
-	record.Token = GenerateShortLink(record.LongURL, s.logger)
-	_, err := s.Repo.Create(record)
+	link, err := GenerateShortLink(record.LongURL, s.logger)
+	if err != nil {
+
+		return "", err
+	}
+
+	record.Token = link
+	_, err = s.Repo.Create(record)
 
 	return record.Token, err
 
@@ -86,25 +92,32 @@ func (s *RecordService) Delete(recordID int) error {
 	return s.Repo.Delete(recordID)
 }
 
-func GenerateShortLink(longURL string, l logger.Interface) (shortURL string) {
+func GenerateShortLink(longURL string, l logger.Interface) (shortURL string, err error) {
 	urlHashBytes := sha256gen(longURL)
 	generatedNumber := new(big.Int).SetBytes(urlHashBytes).Uint64()
-	finalString := base58Gen([]byte(fmt.Sprintf("%d", generatedNumber)), l)
-	return finalString[:8]
+	finalString, err := base58Gen([]byte(fmt.Sprintf("%d", generatedNumber)), l)
+
+	if err != nil {
+		return finalString, err
+	}
+
+	return finalString[:8], err
 }
 
-func base58Gen(bytes []byte, l logger.Interface) string {
+func base58Gen(bytes []byte, l logger.Interface) (string, error) {
 	encoding := base58.BitcoinEncoding
 	encoded, err := encoding.Encode(bytes)
 	if err != nil {
-		l.Fatal(fmt.Errorf("encoding error: %w", err))
+		l.Error(fmt.Errorf("encoding error: %w", err))
 	}
-	return string(encoded)
+
+	return string(encoded), err
 }
 
 func sha256gen(input string) []byte {
 	hash := sha256.New()
 	hash.Write([]byte(input))
+
 	return hash.Sum(nil)
 }
 

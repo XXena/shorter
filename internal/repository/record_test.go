@@ -33,7 +33,7 @@ func TestRecordPostgres_Create(t *testing.T) {
 	if assert.Nil(t, err) {
 		assert.Equal(t, id, inputData.ID)
 	} else {
-		t.Errorf("repo Create err: %v", err)
+		t.Errorf("repo Create err: %v", err) // todo вынести в отдельный тест, где провоцировать и всегда получать ошибку! юнит должен быть атомарным, никаких else
 	}
 
 }

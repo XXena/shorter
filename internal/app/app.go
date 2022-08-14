@@ -28,6 +28,8 @@ func Run(cfg *config.Config) {
 	db, err := postgres.NewPostgresDB(cfg.PG, l)
 	if err != nil {
 		l.Fatal(fmt.Errorf("error occurred while running app: %w", err))
+
+		return
 	}
 
 	Repository := repository.NewRepository(db, l)

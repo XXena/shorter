@@ -31,7 +31,11 @@ func TestHandler_Fetch(t *testing.T) {
 	now := time.Now()
 	rand.Seed(time.Now().UnixNano())
 	str := test.RandSeq(10)
-	token := services.GenerateShortLink(str, nil)
+	token, err := services.GenerateShortLink(str, nil)
+
+	if err != nil {
+		t.Fatalf("generate short link error: %v", err)
+	}
 
 	inputData := []entities.Record{
 		// case new record
@@ -76,7 +80,6 @@ func TestHandler_Fetch(t *testing.T) {
 
 	if err != nil {
 		t.Errorf("Handler Fetch err: %v", err)
-
 	}
 
 	// create response recorder:
