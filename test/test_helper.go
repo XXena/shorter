@@ -16,7 +16,7 @@ type RequestParams struct {
 	ParamValue string
 }
 
-// генерирует случайную строку длины n
+// RandSeq генерирует случайную строку длины n
 func RandSeq(n int) string {
 	b := make([]rune, n)
 	for i := range b {
