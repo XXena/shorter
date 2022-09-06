@@ -2,8 +2,8 @@ package repository
 
 import (
 	"testing"
-	"time"
 
+	"github.com/XXena/shorter/test"
 	"github.com/pkg/errors"
 
 	"github.com/stretchr/testify/assert"
@@ -18,18 +18,9 @@ import (
 func TestRecordPostgres_Create(t *testing.T) {
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
-
-	now := time.Now()
-	inputData := entities.Record{
-		ID:         9,
-		LongURL:    "https://engineering.atspotify.com/2020/04/when-should-i-write-an-architecture-decision-record/",
-		Token:      "XAJjKHF4",
-		CreatedAt:  now,                  // 0001-01-01T00:00:01Z
-		ExpiryDate: now.AddDate(1, 0, 0), // 26132-08-16T01:41:32Z
-	}
+	inputData := test.NewFakeRecord()
 	mockRecordRepo := mock.NewMockRecord(ctl)
 	mockRecordRepo.EXPECT().Create(inputData).Return(inputData.ID, nil)
-
 	id, err := mockRecordRepo.Create(inputData)
 	if err != nil {
 		t.Fatal(err)
@@ -44,16 +35,12 @@ func TestRecordPostgres_Create(t *testing.T) {
 func TestRecordPostgres_CreateFail(t *testing.T) { // todo negative tests
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
-
 	inputData := entities.Record{}
 	mockRecordRepo := mock.NewMockRecord(ctl)
 	mockRecordRepo.EXPECT().Create(inputData).Return(inputData.ID, nil)
-
 	_, err := mockRecordRepo.Create(inputData)
 	mockRecordRepo.EXPECT().Create(inputData).Return(0, errors.New("unique constraint violation"))
-
 	_, err = mockRecordRepo.Create(inputData)
-
 	assert.NotNil(t, err)
 
 }
@@ -61,18 +48,8 @@ func TestRecordPostgres_CreateFail(t *testing.T) { // todo negative tests
 func TestRecordPostgres_GetByToken(t *testing.T) {
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
-
 	mockRecordRepo := mock.NewMockRecord(ctl)
-
-	now := time.Now()
-	inputData := entities.Record{
-		ID:         9,
-		LongURL:    "https://engineering.atspotify.com/2020/04/when-should-i-write-an-architecture-decision-record/",
-		Token:      "XAJjKHF4",
-		CreatedAt:  now,                  // 0001-01-01T00:00:01Z
-		ExpiryDate: now.AddDate(1, 0, 0), // 26132-08-16T01:41:32Z
-	}
-
+	inputData := test.NewFakeRecord()
 	mockRecordRepo.EXPECT().GetByToken(inputData.Token).Return(inputData, nil)
 	record, err := mockRecordRepo.GetByToken(inputData.Token)
 	if err != nil {
@@ -87,18 +64,8 @@ func TestRecordPostgres_GetByToken(t *testing.T) {
 func TestRecordPostgres_GetByURL(t *testing.T) {
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
-
 	mockRecordRepo := mock.NewMockRecord(ctl)
-
-	now := time.Now()
-	inputData := entities.Record{
-		ID:         9,
-		LongURL:    "https://engineering.atspotify.com/2020/04/when-should-i-write-an-architecture-decision-record/",
-		Token:      "XAJjKHF4",
-		CreatedAt:  now,                  // 0001-01-01T00:00:01Z
-		ExpiryDate: now.AddDate(1, 0, 0), // 26132-08-16T01:41:32Z
-	}
-
+	inputData := test.NewFakeRecord()
 	mockRecordRepo.EXPECT().GetByURL(inputData.LongURL).Return(inputData, nil)
 	record, err := mockRecordRepo.GetByURL(inputData.LongURL)
 	if err != nil {
