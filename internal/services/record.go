@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"math/big"
+	"math/rand"
 	"strings"
 	"time"
 
@@ -14,6 +15,11 @@ import (
 	"github.com/XXena/shorter/internal/entities"
 	"github.com/XXena/shorter/internal/helpers"
 	"github.com/XXena/shorter/internal/repository"
+)
+
+const (
+	letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	saltLen     = 5
 )
 
 type RecordService struct {
@@ -30,7 +36,7 @@ func NewRecordService(r repository.Record, l logger.Interface) *RecordService {
 
 func (s *RecordService) Create(record entities.Record) (string, error) {
 
-	link, err := GenerateShortLink(record.LongURL, s.logger)
+	link, err := s.GenerateShortLink(record.LongURL, s.logger)
 	if err != nil {
 
 		return "", err
@@ -92,16 +98,55 @@ func (s *RecordService) Delete(recordID int) error {
 	return s.Repo.Delete(recordID)
 }
 
-func GenerateShortLink(longURL string, l logger.Interface) (shortURL string, err error) {
-	urlHashBytes := sha256gen(longURL)
+func (s *RecordService) GenerateShortLink(longURL string, l logger.Interface) (shortURL string, err error) {
+	salt := saltGen(saltLen)
+	urlHashBytes := sha256gen(longURL + salt)
 	generatedNumber := new(big.Int).SetBytes(urlHashBytes).Uint64()
 	finalString, err := base58Gen([]byte(fmt.Sprintf("%d", generatedNumber)), l)
 
 	if err != nil {
-		return finalString, err
+		return "", err
+	}
+
+	ok, err := s.checkHashCollision(finalString[:8], l)
+	if (err != nil) || (!ok) {
+		if strings.Contains(err.Error(), "hash collision found") {
+			finalString, err := s.GenerateShortLink(longURL, l) // todo норм ли вызывать рекурсивно?
+			if err != nil {
+
+				return "", err
+			}
+
+			return finalString[:8], err
+		}
+
+		return "", err
 	}
 
 	return finalString[:8], err
+}
+
+func (s *RecordService) checkHashCollision(hash string, l logger.Interface) (bool, error) {
+	record, err := s.Repo.GetByToken(hash)
+
+	if err != nil {
+		if strings.Contains(err.Error(), "no rows in result set") { // todo типизация ошибок
+
+			return true, nil
+		}
+
+		l.Error(fmt.Errorf("checking hash collision error: %w", err))
+
+		return false, err
+	}
+
+	if record.Token == hash {
+		l.Error(fmt.Errorf("hash collision found: %w", err))
+
+		return false, err
+	}
+
+	return false, err
 }
 
 func base58Gen(bytes []byte, l logger.Interface) (string, error) {
@@ -119,6 +164,14 @@ func sha256gen(input string) []byte {
 	hash.Write([]byte(input))
 
 	return hash.Sum(nil)
+}
+
+func saltGen(n int) string {
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	return string(b)
 }
 
 func getToken(shortURL string) string {
