@@ -6,7 +6,7 @@ import (
 	"github.com/XXena/shorter/test"
 	"github.com/pkg/errors"
 
-	mock "github.com/XXena/shorter/mock"
+	"github.com/XXena/shorter/mock"
 	"github.com/golang/mock/gomock"
 )
 

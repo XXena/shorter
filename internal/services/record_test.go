@@ -1,7 +1,10 @@
 package services
 
 import (
+	"errors"
 	"testing"
+
+	"github.com/XXena/shorter/internal/entities"
 
 	"github.com/XXena/shorter/test"
 
@@ -11,7 +14,7 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
-func TestRecordService_Create(t *testing.T) {
+func Test__RecordService_Create_pass(t *testing.T) {
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
 	inputData := test.NewFakeRecord()
@@ -28,7 +31,18 @@ func TestRecordService_Create(t *testing.T) {
 
 }
 
-func TestRecordService_ForwardToCreate(t *testing.T) {
+func Test__RecordService_Create_fails_on_empty_record(t *testing.T) {
+	ctl := gomock.NewController(t)
+	defer ctl.Finish()
+	inputData := entities.Record{}
+	mockRecordService := mock.NewMockRecordRepo(ctl)
+	mockRecordService.EXPECT().Create(inputData).Return(inputData.Token, errors.New("error: invalid argument"))
+	token, err := mockRecordService.Create(inputData)
+	assert.Equal(t, token, "")
+	assert.NotNil(t, err)
+}
+
+func Test__RecordService_ForwardToCreate_pass(t *testing.T) {
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
 	inputData := test.NewFakeRecord()
@@ -44,7 +58,19 @@ func TestRecordService_ForwardToCreate(t *testing.T) {
 	}
 }
 
-func TestRecordService_GetByURL(t *testing.T) {
+func Test__RecordService_ForwardToCreate_fails_if_no_url(t *testing.T) {
+	ctl := gomock.NewController(t)
+	defer ctl.Finish()
+	inputData := entities.Record{}
+	mockRecordService := mock.NewMockRecordRepo(ctl)
+	mockRecordService.EXPECT().ForwardToCreate(inputData.LongURL, inputData.ExpiryDate).Return([]byte(inputData.Token), errors.New("error: invalid argument"))
+	tokenBytes, err := mockRecordService.ForwardToCreate(inputData.LongURL, inputData.ExpiryDate)
+
+	assert.NotNil(t, err)
+	assert.Equal(t, []byte{}, tokenBytes)
+}
+
+func Test__RecordService_GetByURL_pass(t *testing.T) {
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
 	inputData := test.NewFakeRecord()
@@ -61,7 +87,18 @@ func TestRecordService_GetByURL(t *testing.T) {
 
 }
 
-func TestRecordService_Redirect(t *testing.T) {
+func Test__RecordService_GetByURL_fails_if_no_url(t *testing.T) {
+	ctl := gomock.NewController(t)
+	defer ctl.Finish()
+	inputData := entities.Record{}
+	mockRecordService := mock.NewMockRecordRepo(ctl)
+	mockRecordService.EXPECT().GetByURL(inputData.LongURL).Return(inputData.Token, errors.New("no rows in sql set"))
+	token, err := mockRecordService.GetByURL(inputData.LongURL)
+	assert.NotNil(t, err)
+	assert.Equal(t, "", token)
+}
+
+func Test__RecordService_Redirect_pass(t *testing.T) {
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
 	inputData := test.NewFakeRecord()
@@ -75,4 +112,15 @@ func TestRecordService_Redirect(t *testing.T) {
 	if assert.Nil(t, err) {
 		assert.Equal(t, url, inputData.LongURL)
 	}
+}
+
+func Test__RecordService_Redirect_fails_if_no_url(t *testing.T) {
+	ctl := gomock.NewController(t)
+	defer ctl.Finish()
+	inputData := entities.Record{}
+	mockRecordService := mock.NewMockRecordRepo(ctl)
+	mockRecordService.EXPECT().Redirect(inputData.Token).Return(inputData.LongURL, errors.New("no rows in sql set"))
+	url, err := mockRecordService.Redirect(inputData.Token)
+	assert.Equal(t, "", url)
+	assert.NotNil(t, err)
 }
