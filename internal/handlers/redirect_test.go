@@ -1,12 +1,13 @@
 package handlers
 
 import (
+	"errors"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
-	"github.com/XXena/shorter/test"
-	"github.com/pkg/errors"
-
 	"github.com/XXena/shorter/mock"
+	"github.com/XXena/shorter/test"
 	"github.com/golang/mock/gomock"
 )
 
@@ -29,4 +30,21 @@ func Test__Redirect_pass_on_token(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+}
+
+func Test__Redirect_OK_on_token(t *testing.T) {
+	inputData := test.NewFakeRecord()
+	req := httptest.NewRequest(http.MethodGet, "/"+inputData.Token, nil)
+	w := httptest.NewRecorder()
+
+	ctrl := gomock.NewController(t)
+	mockHandler := mock.NewMockHandlerInterface(ctrl)
+	mockHandler.EXPECT().Redirect(w, req).Return()
+
+	mockHandler.Redirect(w, req)
+	if status := w.Code; status != http.StatusOK {
+		t.Errorf("redirect handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
+
 }

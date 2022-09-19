@@ -175,5 +175,5 @@ func saltGen(n int) string {
 }
 
 func getToken(shortURL string) string {
-	return strings.TrimLeft(shortURL, "localhost/")
+	return strings.TrimLeft(shortURL, "localhost/") // todo
 }

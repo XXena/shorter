@@ -12,6 +12,10 @@ type Handler struct {
 	service *services.Service
 	logger  logger.Interface
 }
+type HandlerInterface interface {
+	Fetch(w http.ResponseWriter, r *http.Request)
+	Redirect(w http.ResponseWriter, r *http.Request)
+}
 
 func NewHandler(s *services.Service, l logger.Interface) *Handler {
 	return &Handler{
