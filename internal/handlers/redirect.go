@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func (h *Handler) Redirect(w http.ResponseWriter, r *http.Request) {
+func (h *handler) Redirect(w http.ResponseWriter, r *http.Request) {
 	shortURL := r.URL.RequestURI()
 	longURL, err := h.service.Redirect(shortURL)
 

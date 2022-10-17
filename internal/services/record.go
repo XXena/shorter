@@ -9,11 +9,9 @@ import (
 	"time"
 
 	"github.com/XXena/shorter/pkg/logger"
-
 	"github.com/itchyny/base58-go"
 
 	"github.com/XXena/shorter/internal/entities"
-	"github.com/XXena/shorter/internal/helpers"
 	"github.com/XXena/shorter/internal/repository"
 )
 
@@ -22,19 +20,20 @@ const (
 	saltLen     = 5
 )
 
-type RecordService struct {
-	Repo   repository.Record
+type recordService struct {
+	Repo   repository.RecordInterface
 	logger logger.Interface
+	clock  func() time.Time // todo время можно поместить в обертку
 }
 
-func NewRecordService(r repository.Record, l logger.Interface) *RecordService {
-	return &RecordService{
+func NewRecordService(r repository.RecordInterface, l logger.Interface) RecordServiceInterface {
+	return &recordService{
 		Repo:   r,
 		logger: l,
 	}
 }
 
-func (s *RecordService) Create(record entities.Record) (string, error) {
+func (s *recordService) Create(record entities.Record) (string, error) {
 
 	link, err := s.GenerateShortLink(record.LongURL, s.logger)
 	if err != nil {
@@ -49,7 +48,7 @@ func (s *RecordService) Create(record entities.Record) (string, error) {
 
 }
 
-func (s *RecordService) ForwardToCreate(url string, expiry time.Time) ([]byte, error) {
+func (s *recordService) ForwardToCreate(url string, expiry time.Time) ([]byte, error) {
 	now := time.Now()
 
 	if expiry.IsZero() {
@@ -70,35 +69,40 @@ func (s *RecordService) ForwardToCreate(url string, expiry time.Time) ([]byte, e
 
 }
 
-func (s *RecordService) GetByURL(longURL string) (string, error) {
+func (s *recordService) GetByURL(longURL string) (string, error) {
 	record, err := s.Repo.GetByURL(longURL)
 
-	if !(helpers.InTime(record.ExpiryDate, time.Now())) {
-		//todo если срок действия истек, генерируется новый хэш и возвращается наружу
+	if err != nil {
+		return record.Token, fmt.Errorf("GetByURL service error: %w", err)
+	}
+
+	if !(inTime(record.ExpiryDate, time.Now().UTC())) { // todo все даты на бэке д.б.в utc!
+		// todo если срок действия истек, генерируется новый хэш и возвращается наружу
 	}
 
 	return record.Token, err
 }
 
-func (s *RecordService) Redirect(shortURL string) (string, error) {
+func (s *recordService) Redirect(shortURL string) (string, error) {
 	token := getToken(shortURL)
 	record, err := s.Repo.GetByToken(token)
-	if !(helpers.InTime(record.ExpiryDate, time.Now())) {
-		//todo если срок действия истек, вернуть ошибку о сроке действия
+	//if !(inTime(record.ExpiryDate, s.clock())) { // todo
+	if !(inTime(record.ExpiryDate, time.Now().UTC())) {
+		// todo если срок действия истек, вернуть ошибку о сроке действия
 	}
 
 	return record.LongURL, err
 }
 
-func (s *RecordService) Update(recordID int, record entities.Record) error {
+func (s *recordService) Update(recordID int, record entities.Record) error {
 	return s.Repo.Update(recordID, record)
 }
 
-func (s *RecordService) Delete(recordID int) error {
+func (s *recordService) Delete(recordID int) error {
 	return s.Repo.Delete(recordID)
 }
 
-func (s *RecordService) GenerateShortLink(longURL string, l logger.Interface) (shortURL string, err error) {
+func (s *recordService) GenerateShortLink(longURL string, l logger.Interface) (shortURL string, err error) {
 	salt := saltGen(saltLen)
 	urlHashBytes := sha256gen(longURL + salt)
 	generatedNumber := new(big.Int).SetBytes(urlHashBytes).Uint64()
@@ -111,7 +115,7 @@ func (s *RecordService) GenerateShortLink(longURL string, l logger.Interface) (s
 	ok, err := s.checkHashCollision(finalString[:8], l)
 	if (err != nil) || (!ok) {
 		if strings.Contains(err.Error(), "hash collision found") {
-			finalString, err := s.GenerateShortLink(longURL, l) // todo норм ли вызывать рекурсивно?
+			finalString, err := s.GenerateShortLink(longURL, l) // todo норм ли вызывать рекурсивно? НЕТ
 			if err != nil {
 
 				return "", err
@@ -126,7 +130,7 @@ func (s *RecordService) GenerateShortLink(longURL string, l logger.Interface) (s
 	return finalString[:8], err
 }
 
-func (s *RecordService) checkHashCollision(hash string, l logger.Interface) (bool, error) {
+func (s *recordService) checkHashCollision(hash string, l logger.Interface) (bool, error) {
 	record, err := s.Repo.GetByToken(hash)
 
 	if err != nil {
@@ -175,5 +179,10 @@ func saltGen(n int) string {
 }
 
 func getToken(shortURL string) string {
-	return strings.TrimLeft(shortURL, "localhost/") // todo
+	return strings.TrimLeft(shortURL, "localhost/") // todo cutset
+	// todo TrimLeft fails jn small 1st letter
+}
+
+func inTime(end, check time.Time) bool {
+	return check.Before(end)
 }

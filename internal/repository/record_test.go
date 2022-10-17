@@ -19,7 +19,7 @@ func Test__RecordPostgres_Create_pass(t *testing.T) {
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
 	inputData := test.NewFakeRecord()
-	mockRecordRepo := mock.NewMockRecord(ctl)
+	mockRecordRepo := mock.NewMockRecordInterface(ctl)
 	mockRecordRepo.EXPECT().Create(inputData).Return(inputData.ID, nil)
 	id, err := mockRecordRepo.Create(inputData)
 	if err != nil {
@@ -36,7 +36,7 @@ func Test__RecordPostgres_Create_fails_on_empty_record(t *testing.T) {
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
 	inputData := entities.Record{}
-	mockRecordRepo := mock.NewMockRecord(ctl)
+	mockRecordRepo := mock.NewMockRecordInterface(ctl)
 	mockRecordRepo.EXPECT().Create(inputData).Return(0, errors.New("unique constraint violation"))
 	_, err := mockRecordRepo.Create(inputData)
 	assert.NotNil(t, err)
@@ -46,7 +46,7 @@ func Test__RecordPostgres_Create_fails_on_empty_record(t *testing.T) {
 func Test__RecordPostgres_GetByToken_pass(t *testing.T) {
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
-	mockRecordRepo := mock.NewMockRecord(ctl)
+	mockRecordRepo := mock.NewMockRecordInterface(ctl)
 	inputData := test.NewFakeRecord()
 	mockRecordRepo.EXPECT().GetByToken(inputData.Token).Return(inputData, nil)
 	record, err := mockRecordRepo.GetByToken(inputData.Token)
@@ -62,7 +62,7 @@ func Test__RecordPostgres_GetByToken_pass(t *testing.T) {
 func Test__RecordPostgres_GetByToken_fails_on_empty_record(t *testing.T) {
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
-	mockRecordRepo := mock.NewMockRecord(ctl)
+	mockRecordRepo := mock.NewMockRecordInterface(ctl)
 	inputData := entities.Record{}
 	mockRecordRepo.EXPECT().GetByToken(inputData.Token).Return(inputData, errors.New("no rows in sql set"))
 	record, err := mockRecordRepo.GetByToken(inputData.Token)
@@ -73,7 +73,7 @@ func Test__RecordPostgres_GetByToken_fails_on_empty_record(t *testing.T) {
 func Test__RecordPostgres_GetByURL_pass(t *testing.T) {
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
-	mockRecordRepo := mock.NewMockRecord(ctl)
+	mockRecordRepo := mock.NewMockRecordInterface(ctl)
 	inputData := test.NewFakeRecord()
 	mockRecordRepo.EXPECT().GetByURL(inputData.LongURL).Return(inputData, nil)
 	record, err := mockRecordRepo.GetByURL(inputData.LongURL)
@@ -89,7 +89,7 @@ func Test__RecordPostgres_GetByURL_pass(t *testing.T) {
 func Test__RecordPostgres_GetByURL_fails_on_empty_record(t *testing.T) {
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
-	mockRecordRepo := mock.NewMockRecord(ctl)
+	mockRecordRepo := mock.NewMockRecordInterface(ctl)
 	inputData := test.NewFakeRecord()
 	mockRecordRepo.EXPECT().GetByURL(inputData.LongURL).Return(inputData, nil)
 	record, err := mockRecordRepo.GetByURL(inputData.LongURL)
@@ -108,7 +108,7 @@ func Test__RecordPostgres_GetByURL_fails_on_empty_record(t *testing.T) {
 //
 //	mockRecordRepo := mock.NewMockRecord(ctl)
 //
-//	inputData := entities.Record{
+//	inputData := entities.RecordInterface{
 //		ID: 9,
 //	}
 //

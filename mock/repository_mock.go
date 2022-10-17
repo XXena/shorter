@@ -11,31 +11,31 @@ import (
 	gomock "github.com/golang/mock/gomock"
 )
 
-// MockRecord is a mock of Record interface.
-type MockRecord struct {
+// MockRecordInterface is a mock of RecordInterface interface.
+type MockRecordInterface struct {
 	ctrl     *gomock.Controller
-	recorder *MockRecordMockRecorder
+	recorder *MockRecordInterfaceMockRecorder
 }
 
-// MockRecordMockRecorder is the mock recorder for MockRecord.
-type MockRecordMockRecorder struct {
-	mock *MockRecord
+// MockRecordInterfaceMockRecorder is the mock recorder for MockRecordInterface.
+type MockRecordInterfaceMockRecorder struct {
+	mock *MockRecordInterface
 }
 
-// NewMockRecord creates a new mock instance.
-func NewMockRecord(ctrl *gomock.Controller) *MockRecord {
-	mock := &MockRecord{ctrl: ctrl}
-	mock.recorder = &MockRecordMockRecorder{mock}
+// NewMockRecordInterface creates a new mock instance.
+func NewMockRecordInterface(ctrl *gomock.Controller) *MockRecordInterface {
+	mock := &MockRecordInterface{ctrl: ctrl}
+	mock.recorder = &MockRecordInterfaceMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockRecord) EXPECT() *MockRecordMockRecorder {
+func (m *MockRecordInterface) EXPECT() *MockRecordInterfaceMockRecorder {
 	return m.recorder
 }
 
 // Create mocks base method.
-func (m *MockRecord) Create(record entities.Record) (int, error) {
+func (m *MockRecordInterface) Create(record entities.Record) (int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", record)
 	ret0, _ := ret[0].(int)
@@ -44,13 +44,13 @@ func (m *MockRecord) Create(record entities.Record) (int, error) {
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockRecordMockRecorder) Create(record interface{}) *gomock.Call {
+func (mr *MockRecordInterfaceMockRecorder) Create(record interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockRecord)(nil).Create), record)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockRecordInterface)(nil).Create), record)
 }
 
 // Delete mocks base method.
-func (m *MockRecord) Delete(recordID int) error {
+func (m *MockRecordInterface) Delete(recordID int) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", recordID)
 	ret0, _ := ret[0].(error)
@@ -58,13 +58,13 @@ func (m *MockRecord) Delete(recordID int) error {
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockRecordMockRecorder) Delete(recordID interface{}) *gomock.Call {
+func (mr *MockRecordInterfaceMockRecorder) Delete(recordID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockRecord)(nil).Delete), recordID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockRecordInterface)(nil).Delete), recordID)
 }
 
 // GetByToken mocks base method.
-func (m *MockRecord) GetByToken(token string) (entities.Record, error) {
+func (m *MockRecordInterface) GetByToken(token string) (entities.Record, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByToken", token)
 	ret0, _ := ret[0].(entities.Record)
@@ -73,13 +73,13 @@ func (m *MockRecord) GetByToken(token string) (entities.Record, error) {
 }
 
 // GetByToken indicates an expected call of GetByToken.
-func (mr *MockRecordMockRecorder) GetByToken(token interface{}) *gomock.Call {
+func (mr *MockRecordInterfaceMockRecorder) GetByToken(token interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByToken", reflect.TypeOf((*MockRecord)(nil).GetByToken), token)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByToken", reflect.TypeOf((*MockRecordInterface)(nil).GetByToken), token)
 }
 
 // GetByURL mocks base method.
-func (m *MockRecord) GetByURL(longURL string) (entities.Record, error) {
+func (m *MockRecordInterface) GetByURL(longURL string) (entities.Record, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByURL", longURL)
 	ret0, _ := ret[0].(entities.Record)
@@ -88,13 +88,13 @@ func (m *MockRecord) GetByURL(longURL string) (entities.Record, error) {
 }
 
 // GetByURL indicates an expected call of GetByURL.
-func (mr *MockRecordMockRecorder) GetByURL(longURL interface{}) *gomock.Call {
+func (mr *MockRecordInterfaceMockRecorder) GetByURL(longURL interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByURL", reflect.TypeOf((*MockRecord)(nil).GetByURL), longURL)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByURL", reflect.TypeOf((*MockRecordInterface)(nil).GetByURL), longURL)
 }
 
 // Update mocks base method.
-func (m *MockRecord) Update(recordID int, record entities.Record) error {
+func (m *MockRecordInterface) Update(recordID int, record entities.Record) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", recordID, record)
 	ret0, _ := ret[0].(error)
@@ -102,7 +102,7 @@ func (m *MockRecord) Update(recordID int, record entities.Record) error {
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockRecordMockRecorder) Update(recordID, record interface{}) *gomock.Call {
+func (mr *MockRecordInterfaceMockRecorder) Update(recordID, record interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockRecord)(nil).Update), recordID, record)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockRecordInterface)(nil).Update), recordID, record)
 }

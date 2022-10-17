@@ -2,15 +2,13 @@ package repository
 
 import (
 	"github.com/XXena/shorter/internal/entities"
-	"github.com/XXena/shorter/pkg/logger"
-	"github.com/jackc/pgx"
 )
 
-type Repository struct {
-	Record
-}
+//type Repository struct {
+//	RecordInterface
+//}
 
-type Record interface {
+type RecordInterface interface {
 	Create(record entities.Record) (id int, err error)
 	GetByURL(longURL string) (record entities.Record, err error)
 	GetByToken(token string) (record entities.Record, err error)
@@ -18,8 +16,9 @@ type Record interface {
 	Delete(recordID int) error
 }
 
-func NewRepository(db *pgx.Conn, l logger.Interface) *Repository {
-	return &Repository{
-		Record: NewRecordPostgres(db, l),
-	}
-}
+//
+//func NewRepository(db *pgx.Conn, l logger.Interface) RecordInterface {
+//	return &recordPostgres{
+//		RecordInterface: NewRecordPostgres(db, l),
+//	}
+//}

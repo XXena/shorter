@@ -32,10 +32,10 @@ func Run(cfg *config.Config) {
 		return
 	}
 
-	Repository := repository.NewRepository(db, l)
+	Repository := repository.NewRecordPostgres(db, l)
 	// todo defer pg.Close()
 
-	Service := services.NewService(Repository, l)
+	Service := services.NewRecordService(Repository, l)
 
 	Handler := handlers.NewHandler(Service, l)
 

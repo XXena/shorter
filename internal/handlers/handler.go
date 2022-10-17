@@ -8,23 +8,24 @@ import (
 	"github.com/XXena/shorter/internal/services"
 )
 
-type Handler struct {
-	service *services.Service
+type handler struct {
+	service services.RecordServiceInterface
 	logger  logger.Interface
 }
 type HandlerInterface interface {
 	Fetch(w http.ResponseWriter, r *http.Request)
 	Redirect(w http.ResponseWriter, r *http.Request)
+	InitRoutes() *http.ServeMux
 }
 
-func NewHandler(s *services.Service, l logger.Interface) *Handler {
-	return &Handler{
+func NewHandler(s services.RecordServiceInterface, l logger.Interface) HandlerInterface {
+	return &handler{
 		service: s,
 		logger:  l,
 	}
 }
 
-func (h *Handler) InitRoutes() *http.ServeMux {
+func (h *handler) InitRoutes() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", h.Redirect)
 	mux.HandleFunc("/send", h.Fetch)

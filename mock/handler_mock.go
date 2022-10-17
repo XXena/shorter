@@ -46,6 +46,20 @@ func (mr *MockHandlerInterfaceMockRecorder) Fetch(w, r interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Fetch", reflect.TypeOf((*MockHandlerInterface)(nil).Fetch), w, r)
 }
 
+// InitRoutes mocks base method.
+func (m *MockHandlerInterface) InitRoutes() *http.ServeMux {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InitRoutes")
+	ret0, _ := ret[0].(*http.ServeMux)
+	return ret0
+}
+
+// InitRoutes indicates an expected call of InitRoutes.
+func (mr *MockHandlerInterfaceMockRecorder) InitRoutes() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InitRoutes", reflect.TypeOf((*MockHandlerInterface)(nil).InitRoutes))
+}
+
 // Redirect mocks base method.
 func (m *MockHandlerInterface) Redirect(w http.ResponseWriter, r *http.Request) {
 	m.ctrl.T.Helper()

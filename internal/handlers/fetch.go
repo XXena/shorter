@@ -9,7 +9,7 @@ import (
 	"github.com/XXena/shorter/config"
 )
 
-func (h *Handler) Fetch(w http.ResponseWriter, r *http.Request) {
+func (h *handler) Fetch(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		h.logger.Debug(fmt.Errorf("form parameter parsing failed: %w", err))
@@ -19,7 +19,7 @@ func (h *Handler) Fetch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	url := r.Form.Get(config.UrlFormParameter)
-	body, err := h.service.RecordRepo.GetByURL(url)
+	body, err := h.service.GetByURL(url)
 	if err == nil {
 		_, err = w.Write([]byte(body))
 		if err != nil {
